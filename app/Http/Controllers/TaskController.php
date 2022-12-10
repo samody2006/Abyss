@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\TaskCollection;
-use App\Http\Resources\TaskResource;
+
+
+use App\Http\Requests\TaskRequest;
 use App\Models\Task;
 use Illuminate\Http\Request;
+use App\Http\Resources\TaskResource;
 use Illuminate\Support\Facades\Validator;
 
 class TaskController extends Controller
@@ -26,23 +28,21 @@ class TaskController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return TaskResource
      */
-    public function store(Request $request)
+    public function store(TaskRequest $request)
     {
-        $data = $request->all();
+        try {
+            if(!$task = $request->createTask()) {
+                return response()->errorResponse('Failed to create task! Please try again later');
+            }
 
-        $validator = Validator::make($data, [
-            'name' => 'required',
-            'description' => 'required',
-            'file' => 'required',
-            'type' => 'required',
-        ]);
-
-        if ($validator->fails()) {
-            return response(['error' => $validator->errors(), 'Validation Error']);
+            return (new TaskResource($task))->additional([
+                'message' => 'Task successfully created',
+                'status' => 'success'
+            ]);
+        } catch(QueryException $e) {
+            report($e);
+            return response()->errorResponse('Failed to create task! Please try again later');
         }
-
-        $task = Task::create($data);
-        return new TaskResource($task);
     }
 
     /**
@@ -72,7 +72,7 @@ class TaskController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  \App\Models\Task  $task
-     * @return \Illuminate\Http\Response
+     * @return TaskResource
      */
     public function destroy(Task $task)
     {

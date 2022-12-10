@@ -20,4 +20,10 @@ class Task extends Model
         'file',
         'type'
     ];
+
+    public function setImageAttribute($input) {
+        if($input) {
+            $this->attributes['file'] = !is_null($input) ? uploadImage('images/', $input) : null;
+        }
+    }
 }

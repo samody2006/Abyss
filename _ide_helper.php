@@ -17912,6 +17912,42 @@
      
 }
 
+    namespace Spatie\UrlSigner\Laravel { 
+            /**
+     * 
+     *
+     */ 
+        class UrlSignerFacade {
+                    /**
+         * Get a secure URL to a controller action.
+         *
+         * @param string $url
+         * @param \DateTime|int|null $expiration Defaults to the config value
+         * @return string 
+         * @static 
+         */ 
+        public static function sign($url, $expiration = null)
+        {
+                        /** @var \Spatie\UrlSigner\Laravel\UrlSigner $instance */
+                        return $instance->sign($url, $expiration);
+        }
+                    /**
+         * Validate a signed url.
+         *
+         * @param string $url
+         * @return bool 
+         * @static 
+         */ 
+        public static function validate($url)
+        {            //Method inherited from \Spatie\UrlSigner\BaseUrlSigner         
+                        /** @var \Spatie\UrlSigner\Laravel\UrlSigner $instance */
+                        return $instance->validate($url);
+        }
+         
+    }
+     
+}
+
     namespace Illuminate\Http { 
             /**
      * 
@@ -21749,6 +21785,7 @@ namespace  {
             class Vite extends \Illuminate\Support\Facades\Vite {}
             class Image extends \Intervention\Image\Facades\Image {}
             class Flare extends \Spatie\LaravelIgnition\Facades\Flare {}
+            class UrlSigner extends \Spatie\UrlSigner\Laravel\UrlSignerFacade {}
      
 }
 

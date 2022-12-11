@@ -9,6 +9,7 @@ class Task extends Model
 {
     use HasFactory;
 
+
     /**
      * The attributes that are mass assignable.
      *
@@ -21,9 +22,4 @@ class Task extends Model
         'type'
     ];
 
-    public function setImageAttribute($input) {
-        if($input) {
-            $this->attributes['file'] = !is_null($input) ? uploadImage('images/', $input) : null;
-        }
-    }
 }

@@ -17,9 +17,7 @@ class TaskResourceCollection extends ResourceCollection
 
         return [
             "task" => new TaskResource($this),
-            "Image" => [
-                'File'          =>  $this->file
-            ]
+
         ];
     }
 }

@@ -16,3 +16,5 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+Route::get('local/temp/{path}', function (string $path){
+    return Storage::disk('local')->download($path);})->name('local.temp');

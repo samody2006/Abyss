@@ -2,7 +2,11 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Resources\TaskResource;
+use App\Http\Resources\TaskResourceCollection;
+use App\Models\Task;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Storage;
 
 class TaskRequest extends FormRequest
 {
@@ -13,7 +17,7 @@ class TaskRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,40 +25,32 @@ class TaskRequest extends FormRequest
      *
      * @return array<string, mixed>
      */
-    public function rules()
+    public function rules( )
     {
         $data =  [
-
-
             "name"          => ['required', 'max:50'],
             "description"   => ['required', 'max:255'],
-            "file"          => ['required','size:4883','image'],
+            "file"          => ['required','max:4883','image'],
             "type"          => ['required', 'in:1,2,3'],
         ];
-
         if($this->filled('file'))
-            foreach($this->input('file') as $index => $photo) {
-                if(photoType($photo)) {
-                    $data['file'.$index] = photoType($photo) == "file" ? 'image|mimes:jpeg,jpg,png,gif,webp' : 'base64image|base64mimes:jpeg,jpg,png,gif,webp';
-                }
-            }
+        {
+            $task_image = filled('task_image')->getClientOriginalName();
+            $filename = time() . rand(1,10) . '.' . $task_image->getClientOriginalExtension();
+            $newImage = \Image::make($task_image)->getRealPath();
+            Storage::disk('public/image')->put( $filename, $newImage->stream());
+        }
 
-        return $data;
+return $data;
+
     }
 
     public function createTask()
     {
-        $data = $this->validated();
-        return task()->create($data);
-    }
 
-    protected function getPhotoType()
-    {
-        if ($this->filled('file')) {
-            return photoType($this->input('file'));
-        } elseif($this->file('file')) {
-            return photoType($this->file('file'));
-        }
+        $data = $this->validated();
+        Task::create($data);
+        return response('OK', 200);
     }
 
     public function messages()
